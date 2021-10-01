@@ -5,6 +5,10 @@ import { mockRooms } from "./models/room"
 import { socketHandler } from "./socket-handler"
 import cors from "cors"
 import { serverDatabase } from "./database"
+const serve = require('express-static') 
+
+import fs from 'fs/promises'
+
 // import { serverDatabase } from "./database"
 
 export class Server {
@@ -12,7 +16,7 @@ export class Server {
   private app: Application;
   private io: SocketIOServer;
 
-  private readonly DEFAULT_PORT = 5000;
+  private readonly DEFAULT_PORT = 4200;
 
   constructor() {
     this.initialize()
@@ -23,6 +27,11 @@ export class Server {
   private initialize(): void {
     this.app = express()
     this.configCors()
+    this.app.use(
+      
+      // serve('src/static/frontend')
+      serve('../frontend/dist/frontend')
+    )
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
   }
@@ -35,19 +44,12 @@ export class Server {
 
 
   private handleRoutes(): void {
-    this.app.get("/", (req, res) => {
-      const myJson = {
-        hello: "world!"
-      }
-      res.contentType("application/json").send(myJson)
-    })
 
     this.app.get("/chat-history", (req, res) => {
       const messages = serverDatabase.readMessages()
       res.statusCode = 200
       res.contentType("application/json").send(messages)
     })
-
 
     this.app.get("/rooms", (req, res) => {
       res.send(mockRooms)
@@ -63,14 +65,14 @@ export class Server {
 
     this.io.on("connection", socket => {
       socketHandler.add(socket)
+      socket.broadcast.emit("sendMessage", "world");
       console.log("Socket connected.", socket.id, socket.handshake.time)
+      socket.on("sendMessage", chatMessage => {
+        console.log("sendMessage", chatMessage)
+        serverDatabase.addMessage(chatMessage)
+      })
     })
 
-    this.io.on("sendMessage", socket => {
-      console.log("sendMessage", socket)
-      // const newMessage = socket.cositas
-      // serverDatabase.addMessage(newMessage)
-    })
 
     this.io.on("disconnect", socket => {
       socketHandler.remove(socket)
