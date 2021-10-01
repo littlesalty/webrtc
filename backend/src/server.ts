@@ -1,45 +1,87 @@
-import express, { Application } from "express";
-import { Server as SocketIOServer } from "socket.io";
-import { createServer, Server as HTTPServer } from "http";
- 
+import express, { Application } from "express"
+import { Server as SocketIOServer } from "socket.io"
+import { createServer, Server as HTTPServer } from "http"
+import { mockRooms } from "./models/room"
+import { socketHandler } from "./socket-handler"
+import cors from "cors"
+import { serverDatabase } from "./database"
+// import { serverDatabase } from "./database"
+
 export class Server {
- private httpServer: HTTPServer;
- private app: Application;
- private io: SocketIOServer;
- 
- private readonly DEFAULT_PORT = 5000;
- 
- constructor() {
-   this.initialize();
- 
-   this.handleRoutes();
-   this.handleSocketConnection();
- }
- 
- private initialize(): void {
-   this.app = express();
-   this.httpServer = createServer(this.app);
-   this.io = new SocketIOServer(this.httpServer);
- }
- 
- private handleRoutes(): void {
-   this.app.get("/", (req, res) => {
-       const  myJson = {
+  private httpServer: HTTPServer;
+  private app: Application;
+  private io: SocketIOServer;
+
+  private readonly DEFAULT_PORT = 5000;
+
+  constructor() {
+    this.initialize()
+    this.handleSocketConnection()
+    this.handleRoutes()
+  }
+
+  private initialize(): void {
+    this.app = express()
+    this.configCors()
+    this.httpServer = createServer(this.app)
+    this.io = new SocketIOServer(this.httpServer)
+  }
+
+  private configCors(): void {
+    this.app.use(cors({
+      origin: '*'
+    }))
+  }
+
+
+  private handleRoutes(): void {
+    this.app.get("/", (req, res) => {
+      const myJson = {
         hello: "world!"
-       }
-     res.json(myJson); 
-   });
- }
- 
- private handleSocketConnection(): void {
-   this.io.on("connection", socket => {
-     console.log("Socket connected.");
-   });
- }
- 
- public listen(callback: (port: number) => void): void {
-   this.httpServer.listen(this.DEFAULT_PORT, () =>
-     callback(this.DEFAULT_PORT)
-   );
- }
+      }
+      res.contentType("application/json").send(myJson)
+    })
+
+    this.app.get("/chat-history", (req, res) => {
+      const messages = serverDatabase.readMessages()
+      res.statusCode = 200
+      res.contentType("application/json").send(messages)
+    })
+
+
+    this.app.get("/rooms", (req, res) => {
+      res.send(mockRooms)
+    })
+
+    this.app.post("/room/:id/join", (req, res) => {
+      res.statusCode = 200
+      res.end()
+    })
+  }
+
+  private handleSocketConnection(): void {
+
+    this.io.on("connection", socket => {
+      socketHandler.add(socket)
+      console.log("Socket connected.", socket.id, socket.handshake.time)
+    })
+
+    this.io.on("sendMessage", socket => {
+      console.log("sendMessage", socket)
+      // const newMessage = socket.cositas
+      // serverDatabase.addMessage(newMessage)
+    })
+
+    this.io.on("disconnect", socket => {
+      socketHandler.remove(socket)
+      console.log("Socket disconnected.")
+    })
+  }
+
+
+  public listen(callback: (port: number) => void): void {
+    this.httpServer.listen(this.DEFAULT_PORT, () =>
+      callback(this.DEFAULT_PORT)
+    )
+  }
 }
