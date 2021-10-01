@@ -8,13 +8,14 @@ class SocketHandler {
         )
 
         if (!existingSocket) {
+            console.log("adding new socket", socket.id)
             this.activeSockets.push(socket)
 
-            socket.emit("update-user-list", {
-                users: this.activeSockets.filter(
-                    existingSocket => existingSocket.id !== socket.id
-                )
-            })
+            // socket.emit("update-user-list", {
+            //     users: this.activeSockets.filter(
+            //         existingSocket => existingSocket.id !== socket.id
+            //     )
+            // })
         }
     }
 

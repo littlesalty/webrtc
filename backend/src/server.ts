@@ -5,6 +5,7 @@ import { mockRooms } from "./models/room"
 import { socketHandler } from "./socket-handler"
 import cors from "cors"
 import { serverDatabase } from "./database"
+// import { serverDatabase } from "./database"
 
 export class Server {
   private httpServer: HTTPServer;
@@ -15,31 +16,21 @@ export class Server {
 
   constructor() {
     this.initialize()
-    this.configCors()
-    this.handleRoutes()
     this.handleSocketConnection()
+    this.handleRoutes()
   }
 
   private initialize(): void {
     this.app = express()
+    this.configCors()
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
-    this.handleSocketConnection()
   }
 
   private configCors(): void {
-    const whitelist = ['http://localhost:4200']
-    const corsOptions: cors.CorsOptions = {
-      origin: (origin, callback) => {
-        if (origin && whitelist.indexOf(origin) !== -1) {
-          callback(null, true)
-        } else {
-          console.log("origin:", origin)
-          callback(new Error('Not allowed by CORS'))
-        }
-      }
-    }
-    this.app.use(cors(corsOptions))
+    this.app.use(cors({
+      origin: '*'
+    }))
   }
 
 
@@ -72,7 +63,13 @@ export class Server {
 
     this.io.on("connection", socket => {
       socketHandler.add(socket)
-      console.log("Socket connected.")
+      console.log("Socket connected.", socket.id, socket.handshake.time)
+    })
+
+    this.io.on("sendMessage", socket => {
+      console.log("sendMessage", socket)
+      // const newMessage = socket.cositas
+      // serverDatabase.addMessage(newMessage)
     })
 
     this.io.on("disconnect", socket => {
