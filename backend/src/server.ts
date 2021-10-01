@@ -3,6 +3,8 @@ import { Server as SocketIOServer } from "socket.io"
 import { createServer, Server as HTTPServer } from "http"
 import { mockRooms } from "./models/room"
 import { socketHandler } from "./socket-handler"
+import cors from "cors"
+import { serverDatabase } from "./database"
 
 export class Server {
   private httpServer: HTTPServer;
@@ -13,7 +15,7 @@ export class Server {
 
   constructor() {
     this.initialize()
-
+    this.configCors()
     this.handleRoutes()
     this.handleSocketConnection()
   }
@@ -25,13 +27,36 @@ export class Server {
     this.handleSocketConnection()
   }
 
+  private configCors(): void {
+    const whitelist = ['http://localhost:4200']
+    const corsOptions: cors.CorsOptions = {
+      origin: (origin, callback) => {
+        if (origin && whitelist.indexOf(origin) !== -1) {
+          callback(null, true)
+        } else {
+          console.log("origin:", origin)
+          callback(new Error('Not allowed by CORS'))
+        }
+      }
+    }
+    this.app.use(cors(corsOptions))
+  }
+
+
   private handleRoutes(): void {
     this.app.get("/", (req, res) => {
       const myJson = {
         hello: "world!"
       }
-      res.json(myJson)
+      res.contentType("application/json").send(myJson)
     })
+
+    this.app.get("/chat-history", (req, res) => {
+      const messages = serverDatabase.readMessages()
+      res.statusCode = 200
+      res.contentType("application/json").send(messages)
+    })
+
 
     this.app.get("/rooms", (req, res) => {
       res.send(mockRooms)
