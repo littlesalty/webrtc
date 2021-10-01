@@ -3,7 +3,12 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { UiModule } from '../ui/ui.module';
 import { HttpClientModule } from '@angular/common/http';
 
-export const BASE_URL = new InjectionToken<string>('page.title');
+export const HOST = new InjectionToken<string>('Http host')
+export const WS_BASE_URL = new InjectionToken<string>('WebSocket URL');
+export const HTTP_BASE_URL = new InjectionToken<string>('Http URL');
+
+
+const hostName = 'localhost:4200'
 
 @NgModule({
   imports: [
@@ -17,7 +22,9 @@ export const BASE_URL = new InjectionToken<string>('page.title');
   ],
   providers: [
     DatePipe,
-    { provide: BASE_URL, useValue: 'https://5e1d-85-58-30-151.ngrok.io'}
+    { provide: HOST, useValue: hostName },
+    { provide: WS_BASE_URL, useValue: `ws://${hostName}` },
+    { provide: HTTP_BASE_URL, useValue: `http://${hostName}`}
 
   ],
 })
