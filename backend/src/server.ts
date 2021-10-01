@@ -22,6 +22,7 @@ export class Server {
     this.app = express()
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
+    this.handleSocketConnection()
   }
 
   private handleRoutes(): void {
