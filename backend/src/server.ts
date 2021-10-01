@@ -2,7 +2,7 @@ import express, { Application } from "express"
 import { Server as SocketIOServer } from "socket.io"
 import { createServer, Server as HTTPServer } from "http"
 import { mockRooms } from "./models/room"
-import { socketHandler } from "./socket-handler";
+import { socketHandler } from "./socket-handler"
 
 export class Server {
   private httpServer: HTTPServer;
@@ -43,7 +43,7 @@ export class Server {
   }
 
   private handleSocketConnection(): void {
-    
+
     this.io.on("connection", socket => {
       socketHandler.add(socket)
       console.log("Socket connected.")
