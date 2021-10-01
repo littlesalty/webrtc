@@ -3,12 +3,12 @@
     class="flex flex-col rounded-xl p-3 " 
     stlye="max-width: 50%;"
     [ngClass]="{'bg-purple-300': isMine, 'bg-indigo-300': !isMine}">
-    <div class="flex flex-row justify-between">
-      <span [innerText]="timestamp | date:'short'"></span>
-      <span [innerText]="author"></span>
+    <div class="flex items-center justify-between" [ngClass]="{'flex-row': isMine, 'flex-row-reverse': !isMine}">
+      <span class="font-light text-xs" [innerText]="timestamp | date:'HH:mm'"></span>
+      <span class="font-medium" [innerText]="author"></span>
     </div>
     <div
-      class="w-full" 
+      class="w-full mt-1 text-lg font-semibold" 
       [ngClass]="{'text-left': !isMine, 'text-right': isMine}" 
       [innerText]="message">
     </div>
