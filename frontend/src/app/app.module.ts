@@ -19,7 +19,7 @@ import { UiModule } from './ui/ui.module';
     SharedModule
   ],
   providers: [
-    { provide: new InjectionToken<string>('BASE_URL'), useValue: 'https://5e1d-85-58-30-151.ngrok.io/chat'}
+    
   ],
   bootstrap: [AppComponent]
 })
