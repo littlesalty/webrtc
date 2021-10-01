@@ -1,21 +1,28 @@
-<h1>
+<h1 class="text-4xl my-10 ">
   Chatecito Diego
 </h1>
 
 
-
-<div #messages *ngIf="chatMessages$ | async as chatMessages; else loading">
-
-  <app-chat-blob [chatMessage]="msg" *ngFor="let msg of chatMessages$ | async">
-  </app-chat-blob>
-
-  
-  
+<div #messageContainer class="flex flex-col gap-y-5 w-full flex-auto overflow-y-auto pb-5 px-3">
+  <ng-container *ngIf="chatMessages$ | async as chatMessages; else loading">
+    <app-chat-blob [chatMessage]="msg" *ngFor="let msg of chatMessages$ | async">
+    </app-chat-blob>
+  </ng-container>
 </div>
 
-<mat-form-field appearance="outline">
-  <input [(ngModel)]="userInput" matInput type="text">
-</mat-form-field>
+
+
+<div class="flex flex-row w-full gap-x-5 mb-10">
+  <input 
+    (keypress)="submitOnEnterKey($event)"
+    class="border-2 focus:border-0 rounded-xl flex-grow"
+    [(ngModel)]="userInput" type="text">
+  <button mat-fab (click)="submit(userInput)">
+    <mat-icon>send</mat-icon>
+  </button>
+</div>
+
+
 
 
 

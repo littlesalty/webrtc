@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { interval, Observable, of, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ChatMessage } from '../model/message';
 import { BASE_URL } from '../shared/shared.module';
@@ -19,28 +19,30 @@ export class ChatService {
 
 
   getFakeChatHistory(): Observable<Array<ChatMessage>>{
-    const fakeMessages = Array.from({length: 10}).map((_, index) => {
-      let fakeMessage = {
-        userName: 'NanoSpicer',
-        content: 'I am super mega cool',
-        timestamp: new Date(),
-        isMine: true
-      }
-
-      fakeMessage = 
-        index === 3 
-          ? fakeMessage
-          : {...fakeMessage, userName: 'LittleSalty', isMine: false} 
-
-      return fakeMessage
-    })
-
-    return of(fakeMessages)
-    // https://5e1d-85-58-30-151.ngrok.io/chat
+    return interval(2_000).pipe(
+      map(size => {
+        return Array
+          .from({length: size + 20}).map((_, index) => {
+            let fakeMessage = {
+              userName: 'NanoSpicer',
+              content: 'I am super mega cool',
+              timestamp: new Date(),
+              isMine: true
+            }
+      
+            fakeMessage = 
+              index % 3  === 0
+                ? fakeMessage
+                : {...fakeMessage, userName: 'LittleSalty', isMine: false} 
+      
+            return fakeMessage
+          })
+      })
+    )
   }
 
   getChatHistory(): Observable<Array<ChatMessage>> {
-    return this.getChatHistoryImpl()
+    return this.getFakeChatHistory()
   }
 
   getChatHistoryImpl(): Observable<Array<ChatMessage>> {

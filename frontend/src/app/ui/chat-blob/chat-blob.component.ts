@@ -10,6 +10,8 @@ export class ChatBlobComponent implements OnInit {
 
   @Input() chatMessage: ChatMessage
   
+  public get isMine(): boolean { return this.chatMessage.isMine }
+
   public get timestamp() : Date {
     return this.chatMessage.timestamp
   }
