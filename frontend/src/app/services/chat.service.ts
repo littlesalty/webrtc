@@ -41,29 +41,6 @@ export class ChatService {
   }
 
 
-  getFakeChatHistory(): Observable<Array<ChatMessage>> {
-    return interval(2_000).pipe(
-      map(size => {
-        return Array
-          .from({ length: size + 20 }).map((_, index) => {
-            let fakeMessage = {
-              userName: 'NanoSpicer',
-              content: 'I am super mega cool',
-              timestamp: new Date(),
-              isMine: true
-            }
-
-            fakeMessage =
-              index % 3 === 0
-                ? fakeMessage
-                : { ...fakeMessage, userName: 'LittleSalty', isMine: false }
-
-            return fakeMessage
-          })
-      })
-    )
-  }
-
   getChatHistory(): Observable<Array<ChatMessage>> {
     return this.chatMessages$.asObservable().pipe(
       map((msgs: Array<ChatMessage>) => {
@@ -81,11 +58,6 @@ export class ChatService {
       timestamp: new Date()
     }
     this.socket?.emit('sendMessage', chatMessage)
-  }
-
-  getChatHistoryImpl(): Observable<Array<ChatMessage>> {
-    const endpoint = `${this.baseUrl}/chat-history`
-    return this.http.get<Array<ChatMessage>>(endpoint)
   }
 
 }
