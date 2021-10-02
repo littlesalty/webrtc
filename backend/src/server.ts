@@ -28,6 +28,7 @@ export class Server {
     this.app = express()
     this.configCors()
     this.app.use(
+      '/web',
       
       // serve('src/static/frontend')
       serve('../frontend/dist/frontend')

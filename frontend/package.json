@@ -7,7 +7,7 @@
     "start": "ng serve --hmr --proxyConfig=src/proxy.config.json",
     "prebuild": "npm run tw:build",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "watch": "ng build --watch --configuration development --base-href=/web/ --deploy-url=/web/",
     "test": "ng test",
     "tw:build": "node cache-tailwind.js"
   },
