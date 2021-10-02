@@ -1,5 +1,5 @@
 <h1 class="text-4xl my-10 ">
-  Chatecito Diego
+  Chatecito Diego - Username: {{userName}}
 </h1>
 
 
@@ -24,8 +24,16 @@
 
 
 
+<ng-template #usernameDialog>
+  <div class="flex flex-col w-full gap-x-5 mb-10">
+    <input 
+      class="border-2 focus:border-0 rounded-xl flex-grow"
+      [(ngModel)]="userName" type="text">
+    <button mat-raised-button (click)="closeDialog()">Save</button>
+  </div>
+</ng-template>
 
 
 <ng-template #loading>
-  Loding...
+  ⌛⌛ Loading... ⌛⌛
 </ng-template>

@@ -1,5 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Observable } from 'rxjs';
+import { AfterViewInit, Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { EMPTY, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ChatMessage } from './model/message';
 import { ChatService } from './services/chat.service';
@@ -9,21 +10,40 @@ import { ChatService } from './services/chat.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   userInput = ''
+  userName: string | undefined = undefined
 
+
+  @ViewChild('usernameDialog') usernameDialog: TemplateRef<any>;
   @ViewChild('messageContainer') messageContainer: ElementRef<HTMLDivElement>;
+  dialogRef: MatDialogRef<any>;
 
-  chatMessages$: Observable<Array<ChatMessage>>;
+  chatMessages$: Observable<Array<ChatMessage>> = EMPTY;
 
-  constructor(private chat: ChatService) {
-    this.chatMessages$ = this.chat.getChatHistory().pipe(
-      tap(() => this.scrollToBottom())
-    )
+  constructor(
+    private chat: ChatService,
+    private dialog: MatDialog
+  ) {
+    
   }
 
   ngOnInit() {
+    
+  }
 
+  ngAfterViewInit() {
+    this.dialogRef = this.dialog.open(this.usernameDialog)
+    this.dialogRef.afterClosed().subscribe(() => {
+      this.chat.connect(this.userName ?? 'Anonymous')
+      this.chatMessages$ = this.chat.getChatHistory().pipe(
+        tap(() => this.scrollToBottom())
+      )
+    })
+  }
+
+  closeDialog() {
+    this.dialogRef?.close()
   }
 
   submitOnEnterKey(event: Event) {
