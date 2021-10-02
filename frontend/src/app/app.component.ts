@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
   submit(message: string) {
     const trimmedMessage = message.trim()
     if(trimmedMessage.length === 0) return
-
+    this.chat.sendMessage(message)
     // do something
     this.userInput =''
   }
