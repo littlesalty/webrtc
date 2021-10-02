@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { interval, Observable, of, Subject, timer } from 'rxjs';
+import { BehaviorSubject, interval, Observable, of, Subject, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { ChatMessage } from '../model/message';
@@ -14,51 +14,50 @@ export class ChatService {
   readonly myUserName = 'NanoSpicer'
   socket: Socket;
 
-  incomingChatMessage = new Subject<ChatMessage>();
+  private chatMessages$ = new BehaviorSubject<Array<ChatMessage>>([]);
 
   constructor(
     @Inject(HTTP_BASE_URL) private baseUrl: string,
     @Inject(WS_BASE_URL) private wsbaseUrl: string,
     private http: HttpClient
-  ) { 
-    console.log(wsbaseUrl);
-    
-    this.socket =io(this.wsbaseUrl)
+  ) {
+
+    this.socket = io(this.wsbaseUrl)
 
     this.socket.on('connect', () => console.log('Connected ✅'))
-    this.socket.on('sendMessage', args => console.log('sendMessage', args))
+    this.socket.on('sendMessage', chatMessages => {
+      console.log('Topic - sendMessage', chatMessages)
+      const safeArray =
+        Array.isArray(chatMessages)
+          ? chatMessages
+          : [chatMessages]
 
-    setTimeout(() => {
+      const oldMessages = this.chatMessages$.getValue()
 
-      this.socket.emit('sendMessage', {
-        userId: 'fake',
-        userName: 'NanoSpicer',
-        content: 'I am super mega cool',
-        timestamp: new Date(),
-        isMine: true
-      })
-      console.log('message sent ✅')
-    }, 1000)
+      const newChatHistory = [...oldMessages, ...safeArray]
+
+      this.chatMessages$.next(newChatHistory)
+    })
   }
 
 
-  getFakeChatHistory(): Observable<Array<ChatMessage>>{
+  getFakeChatHistory(): Observable<Array<ChatMessage>> {
     return interval(2_000).pipe(
       map(size => {
         return Array
-          .from({length: size + 20}).map((_, index) => {
+          .from({ length: size + 20 }).map((_, index) => {
             let fakeMessage = {
               userName: 'NanoSpicer',
               content: 'I am super mega cool',
               timestamp: new Date(),
               isMine: true
             }
-      
-            fakeMessage = 
-              index % 3  === 0
+
+            fakeMessage =
+              index % 3 === 0
                 ? fakeMessage
-                : {...fakeMessage, userName: 'LittleSalty', isMine: false} 
-      
+                : { ...fakeMessage, userName: 'LittleSalty', isMine: false }
+
             return fakeMessage
           })
       })
@@ -66,7 +65,12 @@ export class ChatService {
   }
 
   getChatHistory(): Observable<Array<ChatMessage>> {
-    return this.getChatHistoryImpl()
+    return this.chatMessages$.asObservable().pipe(
+      map((msgs: Array<ChatMessage>) => {
+        // compare username to mark whether a message is mine or not 
+        return msgs.map(it => ({ ...it, isMine: it.userName === this.myUserName }))
+      })
+    )
   }
 
   sendMessage(message: string) {
@@ -81,9 +85,7 @@ export class ChatService {
 
   getChatHistoryImpl(): Observable<Array<ChatMessage>> {
     const endpoint = `${this.baseUrl}/chat-history`
-    return this.http.get<Array<ChatMessage>>(endpoint).pipe(
-      map((msgs: Array<ChatMessage>) =>msgs.map(it => ({...it, isMine: it.userName === this.myUserName})) )
-    )
+    return this.http.get<Array<ChatMessage>>(endpoint)
   }
 
 }

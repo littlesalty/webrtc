@@ -7,7 +7,6 @@ import cors from "cors"
 import { serverDatabase } from "./database"
 const serve = require('express-static') 
 
-import fs from 'fs/promises'
 
 // import { serverDatabase } from "./database"
 
@@ -65,12 +64,16 @@ export class Server {
   private handleSocketConnection(): void {
 
     this.io.on("connection", socket => {
-      socketHandler.add(socket)
-      socket.broadcast.emit("sendMessage", "world");
       console.log("Socket connected.", socket.id, socket.handshake.time)
-      socket.on("sendMessage", chatMessage => {
-        console.log("sendMessage", chatMessage)
+      socket.emit('sendMessage', serverDatabase.readMessages())
+      socketHandler.add(socket)
+
+      socket.on('sendMessage', chatMessage => {
+        console.log("Topic - 'sendMessage'", chatMessage)
         serverDatabase.addMessage(chatMessage)
+        for (const socket of socketHandler.activeSockets) {
+          socket.emit('sendMessage', chatMessage)
+        }
       })
     })
 

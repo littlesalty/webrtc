@@ -48,6 +48,7 @@ export class AppComponent implements OnInit {
   }
 
   private scrollToBottom() {
+    if(!this.messageContainer) return 
     const container = this.messageContainer.nativeElement
     setTimeout(() => container.scrollTo({
       top: container.scrollHeight,
