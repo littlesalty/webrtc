@@ -11,17 +11,20 @@ import { HTTP_BASE_URL, WS_BASE_URL } from '../shared/shared.module';
 })
 export class ChatService {
 
-  readonly myUserName = 'NanoSpicer'
-  socket: Socket;
+  private myUserName: string | undefined
+  private connected = false
+  socket: Socket | undefined;
 
-  private chatMessages$ = new BehaviorSubject<Array<ChatMessage>>([]);
+  private chatMessages$: BehaviorSubject<Array<ChatMessage>>
 
   constructor(
-    @Inject(HTTP_BASE_URL) private baseUrl: string,
     @Inject(WS_BASE_URL) private wsbaseUrl: string,
-    private http: HttpClient
   ) {
+  }
 
+  connect(userName: string) {
+    this.myUserName = userName
+    this.chatMessages$ = new BehaviorSubject<Array<ChatMessage>>([])
     this.socket = io(this.wsbaseUrl)
 
     this.socket.on('connect', () => console.log('Connected ✅'))
@@ -38,10 +41,19 @@ export class ChatService {
 
       this.chatMessages$.next(newChatHistory)
     })
+    this.connected = true
+  }
+
+  disconnect() {
+    this.connected = false
+    this.myUserName = undefined
+    this.socket?.disconnect()
+    this.socket = undefined
   }
 
 
   getChatHistory(): Observable<Array<ChatMessage>> {
+    
     return this.chatMessages$.asObservable().pipe(
       map((msgs: Array<ChatMessage>) => {
         // compare username to mark whether a message is mine or not 
@@ -51,9 +63,10 @@ export class ChatService {
   }
 
   sendMessage(message: string) {
+    if(!this.connected) return
     const chatMessage: ChatMessage = {
       content: message.trim(),
-      userName: this.myUserName,
+      userName: this.myUserName!,
       isMine: true,
       timestamp: new Date()
     }
