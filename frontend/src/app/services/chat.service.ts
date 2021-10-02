@@ -11,7 +11,7 @@ import { HTTP_BASE_URL, WS_BASE_URL } from '../shared/shared.module';
 })
 export class ChatService {
 
-  readonly myId = 'NanoSpicer'
+  readonly myUserName = 'NanoSpicer'
   socket: Socket;
 
   incomingChatMessage = new Subject<ChatMessage>();
@@ -69,10 +69,20 @@ export class ChatService {
     return this.getChatHistoryImpl()
   }
 
+  sendMessage(message: string) {
+    const chatMessage: ChatMessage = {
+      content: message.trim(),
+      userName: this.myUserName,
+      isMine: true,
+      timestamp: new Date()
+    }
+    this.socket?.emit('sendMessage', chatMessage)
+  }
+
   getChatHistoryImpl(): Observable<Array<ChatMessage>> {
     const endpoint = `${this.baseUrl}/chat-history`
     return this.http.get<Array<ChatMessage>>(endpoint).pipe(
-      map((msgs: Array<ChatMessage>) =>msgs.map(it => ({...it, isMine: it.userName === this.myId})) )
+      map((msgs: Array<ChatMessage>) =>msgs.map(it => ({...it, isMine: it.userName === this.myUserName})) )
     )
   }
 
