@@ -5,7 +5,7 @@ import { mockRooms } from "./models/room"
 import { socketHandler } from "./socket-handler"
 import cors from "cors"
 import { serverDatabase } from "./database"
-const serve = require('express-static') 
+const serve = require('express-static')
 
 
 // import { serverDatabase } from "./database"
@@ -28,9 +28,13 @@ export class Server {
     this.configCors()
     this.app.use(
       '/web',
-      
-      // serve('src/static/frontend')
-      serve('../frontend/dist/frontend')
+      (req, res) => {
+
+        console.log("request web!!")
+        // serve('src/static/frontend')
+        const servedFile = serve('../frontend/dist/frontend')
+        return servedFile(req, res)
+      }
     )
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
