@@ -26,16 +26,6 @@ export class Server {
   private initialize(): void {
     this.app = express()
     this.configCors()
-    this.app.use(
-      '/web',
-      (req, res) => {
-
-        console.log("request web!!")
-        // serve('src/static/frontend')
-        const servedFile = serve('../frontend/dist/frontend')
-        return servedFile(req, res)
-      }
-    )
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
   }
