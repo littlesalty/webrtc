@@ -24,8 +24,8 @@ const hostName = environment.hostName
   providers: [
     DatePipe,
     { provide: HOST, useValue: hostName },
-    { provide: WS_BASE_URL, useValue: `ws://${hostName}` },
-    { provide: HTTP_BASE_URL, useValue: `http://${hostName}`}
+    { provide: WS_BASE_URL, useValue: `wss://${hostName}` },
+    { provide: HTTP_BASE_URL, useValue: `https://${hostName}` }
 
   ],
 })
