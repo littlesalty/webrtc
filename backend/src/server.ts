@@ -5,7 +5,6 @@ import { mockRooms } from "./models/room"
 import { socketHandler } from "./socket-handler"
 import cors from "cors"
 import { serverDatabase } from "./database"
-const serve = require('express-static')
 
 
 // import { serverDatabase } from "./database"
@@ -26,6 +25,7 @@ export class Server {
   private initialize(): void {
     this.app = express()
     this.configCors()
+    this.app.use('/web', express.static('../frontend/dist/angular'))
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
   }
@@ -52,6 +52,10 @@ export class Server {
     this.app.post("/room/:id/join", (req, res) => {
       res.statusCode = 200
       res.end()
+    })
+
+    this.app.get("*", (req, res) => {
+      res.redirect('https://saladito.fun/web')
     })
   }
 
