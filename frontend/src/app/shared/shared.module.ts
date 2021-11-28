@@ -9,7 +9,8 @@ export const WS_BASE_URL = new InjectionToken<string>('WebSocket URL');
 export const HTTP_BASE_URL = new InjectionToken<string>('Http URL');
 
 
-const hostName = environment.hostName
+const chatWebsocket = environment.chatWebsocket
+const apiBaseUrl = environment.apiBaseUrl
 
 @NgModule({
   imports: [
@@ -23,9 +24,9 @@ const hostName = environment.hostName
   ],
   providers: [
     DatePipe,
-    { provide: HOST, useValue: hostName },
-    { provide: WS_BASE_URL, useValue: `wss://${hostName}` },
-    { provide: HTTP_BASE_URL, useValue: `https://${hostName}` }
+    { provide: HOST, useValue: window.location.host },
+    { provide: WS_BASE_URL, useValue: chatWebsocket },
+    { provide: HTTP_BASE_URL, useValue: apiBaseUrl }
 
   ],
 })

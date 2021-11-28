@@ -6,7 +6,7 @@
   "scripts": {
     "start:prod": "npx node dist/index.js &",
     "start": "npx ts-node src/index.ts",
-    "dev": "npx nodemon --watch \"src/**/*.ts\" --exec \"npx ts-node\" src/index.ts",
+    "dev": "npx nodemon --watch \"src/**/*.ts\" --exec \"npm run start\"",
     "lint": "npx eslint src --fix",
     "build": "npx tsc -p ."
   },

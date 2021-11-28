@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  hostName: 'saladito.fun'
+  chatWebsocket: `wss://${window.location.host}`,
+  apiBaseUrl: `https://${window.location.host}`
 };

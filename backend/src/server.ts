@@ -5,6 +5,7 @@ import { mockRooms } from "./models/room"
 import { socketHandler } from "./socket-handler"
 import cors from "cors"
 import { serverDatabase } from "./database"
+import { ConfigFile as ConfigFile } from "."
 
 
 // import { serverDatabase } from "./database"
@@ -16,7 +17,7 @@ export class Server {
 
   private readonly DEFAULT_PORT = 4200;
 
-  constructor() {
+  constructor(private config: ConfigFile) {
     this.initialize()
     this.handleSocketConnection()
     this.handleRoutes()
@@ -25,6 +26,9 @@ export class Server {
   private initialize(): void {
     this.app = express()
     this.configCors()
+    if (!this.config.production) {
+      this.app.use("/web", express.static("../frontend/dist/web"))
+    }
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
   }
@@ -54,7 +58,8 @@ export class Server {
     })
 
     this.app.get("*", (req, res) => {
-      res.redirect('https://saladito.fun/web')
+      const redirectTo = !this.config.production ? "http://localhost:4200/web" : 'https://saladito.fun/web'
+      res.redirect(redirectTo)
     })
   }
 
