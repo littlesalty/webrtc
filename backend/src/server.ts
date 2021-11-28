@@ -25,7 +25,6 @@ export class Server {
   private initialize(): void {
     this.app = express()
     this.configCors()
-    this.app.use('/web', express.static('../frontend/dist/angular'))
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
   }
