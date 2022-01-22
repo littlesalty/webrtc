@@ -58,7 +58,8 @@ export class Server {
     })
 
     this.app.get("*", (req, res) => {
-      const redirectTo = !this.config.production ? "http://localhost:4200/web" : 'https://saladito.fun/web'
+      const host = req.header('host')
+      const redirectTo = !this.config.production ? `http://${host}/web` : `https://${host}/web`
       res.redirect(redirectTo)
     })
   }
