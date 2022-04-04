@@ -10,7 +10,7 @@
     "lint": "npx eslint src --fix",
     "build": "npx tsc -p . && cp -r src/environment dist/ && rm dist/environment/dev.json",
     "package": "npm run build && zip -r backend.zip dist/",
-    "deploy": "scp backend.zip root@saltyspicer.top://root/webrtc/newbackend.zip"
+    "deploy": "scp backend.zip root@saltyspicer.top://root/webrtc/backend/newbackend.zip"
   },
   "keywords": [
     "webrtc"
