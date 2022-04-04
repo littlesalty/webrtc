@@ -29,6 +29,7 @@ export class Server {
     if (!this.config.production) {
       this.app.use("/web", express.static("../frontend/dist/web"))
     }
+    this.app.use("/pizza", express.static("/root/pizza-receipe/"))
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
   }
@@ -58,9 +59,7 @@ export class Server {
     })
 
     this.app.get("*", (req, res) => {
-      if(req.url.includes('pizza')) {
-        res.sendFile('/root/pizza-receipe/index.html')
-      } else {
+      if(!req.url.includes('pizza')) {
         const host = req.header('host')
         const redirectTo = !this.config.production ? `http://${host}/web` : `https://${host}/web`
         res.redirect(redirectTo)
