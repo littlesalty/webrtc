@@ -58,9 +58,13 @@ export class Server {
     })
 
     this.app.get("*", (req, res) => {
-      const host = req.header('host')
-      const redirectTo = !this.config.production ? `http://${host}/web` : `https://${host}/web`
-      res.redirect(redirectTo)
+      if(req.url.includes('pizza')) {
+        res.sendFile('/root/pizza-receipe/index.html')
+      } else {
+        const host = req.header('host')
+        const redirectTo = !this.config.production ? `http://${host}/web` : `https://${host}/web`
+        res.redirect(redirectTo)
+      }
     })
   }
 
