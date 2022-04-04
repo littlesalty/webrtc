@@ -58,13 +58,14 @@ export class Server {
       res.end()
     })
 
-    this.app.get("*", (req, res) => {
-      if(!req.url.includes('pizza')) {
-        const host = req.header('host')
-        const redirectTo = !this.config.production ? `http://${host}/web` : `https://${host}/web`
-        res.redirect(redirectTo)
-      }
-    })
+    // TODO: Fix this mess 
+    // this.app.get("*", (req, res) => {
+    //   if(!req.url.includes('pizza')) {
+    //     const host = req.header('host')
+    //     const redirectTo = !this.config.production ? `http://${host}/web` : `https://${host}/web`
+    //     res.redirect(redirectTo)
+    //   }
+    // })
   }
 
   private handleSocketConnection(): void {
