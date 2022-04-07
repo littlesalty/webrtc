@@ -11,7 +11,7 @@ deploy-back: package-back
 
 
 build-front:
-	cd frontend && npm run build
+	cd frontend && npm run build:prod
 
 package-front: build-front
 	zip frontend.zip -r frontend/dist/
