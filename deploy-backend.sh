@@ -10,7 +10,7 @@ sshpass -e -P "passphrase" ssh root@saltyspicer.top rm -rf /root/webrtc/backend/
 
 echo "⌛ Deploying..."
 sshpass -e -P "passphrase" scp backend.zip root@saltyspicer.top://root/webrtc
-# sshpass -e -P "passphrase" ssh root@saltyspicer.top<unpack-and-run-backend.sh
+sshpass -e -P "passphrase" ssh root@saltyspicer.top<unpack-and-run-backend.sh
 
 rm backend.zip
 unset SSHPASS
