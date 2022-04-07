@@ -9,4 +9,16 @@ package-back: build-back
 deploy-back: package-back
 	./deploy-backend.sh
 
-# build: build-back build-front
+
+build-front:
+	cd frontend && npm run build
+
+package-front: build-front
+	zip frontend.zip -r frontend/dist/
+
+deploy-front: package-front
+	./deploy-frontend.sh
+
+
+build: build-back build-front
+	echo "Done ✅"
