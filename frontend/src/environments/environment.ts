@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  chatWebsocket: `ws://${window.location.host}`,
-  apiBaseUrl: `http://${window.location.host}`
+  chatWebsocket: `ws://${window.location.host}/chat-api`,
+  apiBaseUrl: `http://${window.location.host}/chat-api`
 };
 
 /*
