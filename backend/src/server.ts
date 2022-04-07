@@ -26,19 +26,12 @@ export class Server {
   private initialize(): void {
     this.app = express()
     this.configCors()
-    if (!this.config.production) {
-      this.app.use("/web", express.static("../frontend/dist/web"))
-    }
-    this.app.use("/", express.static("../../home/"))
-    this.app.use("/pizza", express.static("/root/pizza-receipe/"))
     this.httpServer = createServer(this.app)
     this.io = new SocketIOServer(this.httpServer)
   }
 
   private configCors(): void {
-    this.app.use(cors({
-      origin: '*'
-    }))
+    this.app.use(cors({ origin: '*' }))
   }
 
 
@@ -59,14 +52,6 @@ export class Server {
       res.end()
     })
 
-    this.app.get("/", (req, res) => { return })
-    this.app.get("*", (req, res) => {
-      if (!req.url.includes('pizza')) {
-        const host = req.header('host')
-        const redirectTo = !this.config.production ? `http://${host}/` : `https://${host}/`
-        res.redirect(redirectTo)
-      }
-    })
   }
 
   private handleSocketConnection(): void {
