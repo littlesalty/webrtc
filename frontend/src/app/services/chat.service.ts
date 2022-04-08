@@ -25,7 +25,7 @@ export class ChatService {
   connect(userName: string) {
     this.myUserName = userName
     this.chatMessages$ = new BehaviorSubject<Array<ChatMessage>>([])
-    this.socket = io(this.wsbaseUrl)
+    this.socket = io(this.wsbaseUrl, { path: "/chat/api/socket.io" })
 
     this.socket.on('connect', () => console.log('Connected ✅'))
     this.socket.on('sendMessage', chatMessages => {
@@ -53,7 +53,7 @@ export class ChatService {
 
 
   getChatHistory(): Observable<Array<ChatMessage>> {
-    
+
     return this.chatMessages$.asObservable().pipe(
       map((msgs: Array<ChatMessage>) => {
         // compare username to mark whether a message is mine or not 
@@ -63,7 +63,7 @@ export class ChatService {
   }
 
   sendMessage(message: string) {
-    if(!this.connected) return
+    if (!this.connected) return
     const chatMessage: ChatMessage = {
       content: message.trim(),
       userName: this.myUserName!,
