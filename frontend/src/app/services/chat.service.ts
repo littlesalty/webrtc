@@ -3,8 +3,11 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, interval, Observable, of, Subject, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 import { ChatMessage } from '../model/message';
-import { HTTP_BASE_URL, WS_BASE_URL } from '../shared/shared.module';
+import { SOCKET_IO_CONFIG } from '../shared/shared.module';
+
+type SocketIOConfig = typeof environment.socketio;
 
 @Injectable({
   providedIn: 'root'
@@ -18,14 +21,15 @@ export class ChatService {
   private chatMessages$: BehaviorSubject<Array<ChatMessage>>
 
   constructor(
-    @Inject(WS_BASE_URL) private wsbaseUrl: string,
+    @Inject(SOCKET_IO_CONFIG) 
+    private socketioConfig: SocketIOConfig,
   ) {
   }
 
   connect(userName: string) {
     this.myUserName = userName
     this.chatMessages$ = new BehaviorSubject<Array<ChatMessage>>([])
-    this.socket = io(this.wsbaseUrl, { path: "/chat/api/socket.io" })
+    this.socket = io(this.socketioConfig.uri, this.socketioConfig.options)
 
     this.socket.on('connect', () => console.log('Connected ✅'))
     this.socket.on('sendMessage', chatMessages => {

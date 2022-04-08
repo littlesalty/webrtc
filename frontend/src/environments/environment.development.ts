@@ -1,5 +1,11 @@
 export const environment = {
-  production: true,
-  chatWebsocket: `ws://${window.location.host}/chat-api`,
-  apiBaseUrl: `http://${window.location.host}/chat-api`
+  production: false,
+
+  socketio: {
+    uri: `ws://${window.location.host}`,
+    options: {
+      path: '/chat/api/socket.io'
+    }
+  },
+  apiBaseUrl: `http://${window.location.host}/chat/api`
 };
